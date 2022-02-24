@@ -2,8 +2,11 @@ from typing import Awaitable
 from uuid import uuid4
 
 from lea_record_shop.entities import Disc
+from lea_record_shop.services.disc_crud import GetDiscsRequestDto, GetDiscsResponseDto
 from lea_record_shop.services.disc_crud.disc_crud_repository import IDiscCrudRepository
 from lea_record_shop.services.disc_crud.dto import CreateDiscRequestDto, DiscDto
+
+QUERY_HARD_LIMIT = 100
 
 
 def _serialize_disc_to_dto(disc: Disc) -> DiscDto:
@@ -43,3 +46,16 @@ class DiscCrud():
         if disc is None:
             return None
         return _serialize_disc_to_dto(disc)
+
+    async def get_discs(self, params: GetDiscsRequestDto = GetDiscsRequestDto()) -> Awaitable[GetDiscsResponseDto]:
+        params.limit = min(params.limit, QUERY_HARD_LIMIT)
+
+        data = await self.disc_crud_repository.get(params)
+
+        response = GetDiscsResponseDto()
+        response.params = params
+        response.limit = params.limit
+        response.offset = params.offset
+        response.data = data
+
+        return response
