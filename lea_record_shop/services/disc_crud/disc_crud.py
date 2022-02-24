@@ -31,7 +31,7 @@ class DiscCrud():
         # ...
 
         # Instantiate
-        disc = Disc(id=str(uuid4()), name=data.name, artist=data.name, year_of_release=data.year_of_release,
+        disc = Disc(id=str(uuid4()), name=data.name, artist=data.artist, year_of_release=data.year_of_release,
                     genre=data.genre, quantity=data.quantity)
         # ...
 
@@ -59,3 +59,26 @@ class DiscCrud():
         response.data = data
 
         return response
+
+    async def update_disc(self, data: DiscDto) -> DiscDto:
+        # Check if disc exists
+        disc = await self.disc_crud_repository.get_by_id(data.id)
+        if disc is None:
+            raise Exception("Disc not found")
+
+        # Validation...
+        # ...
+
+        # Update
+        disc.name = data.name if data.name is not None else disc.name
+        disc.artist = data.artist if data.artist is not None else disc.artist
+        disc.year_of_release = data.year_of_release if data.year_of_release is not None else disc.year_of_release
+        disc.genre = data.genre if data.genre is not None else disc.genre
+        disc.quantity = data.quantity if data.quantity is not None else disc.quantity
+        # ...
+
+        # Persist
+        await self.disc_crud_repository.update(disc)
+        # ...
+
+        return _serialize_disc_to_dto(disc)

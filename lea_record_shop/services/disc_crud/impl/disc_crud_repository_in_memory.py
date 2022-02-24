@@ -38,3 +38,13 @@ class DiscCrudRepositoryInMemory(IDiscCrudRepository):
 
             response.append(disc)
         return response
+
+    async def update(self, disc: Disc) -> Awaitable[None]:
+        if disc.id not in self.discs:
+            raise Exception('Disc not found')
+        self.discs[disc.id] = disc
+
+    async def delete(self, id: str) -> Awaitable[None]:
+        if id not in self.discs:
+            raise Exception('Disc not found')
+        del self.discs[id]

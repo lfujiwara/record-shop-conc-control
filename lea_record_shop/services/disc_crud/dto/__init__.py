@@ -2,3 +2,4 @@ from lea_record_shop.services.disc_crud.dto.create_disc_request_dto import Creat
 from lea_record_shop.services.disc_crud.dto.disc_dto import DiscDto
 from lea_record_shop.services.disc_crud.dto.get_discs_request_dto import GetDiscsRequestDto
 from lea_record_shop.services.disc_crud.dto.get_discs_response_dto import GetDiscsResponseDto
+from lea_record_shop.services.disc_crud.dto.update_disc_request_dto import UpdateDiscRequestDto

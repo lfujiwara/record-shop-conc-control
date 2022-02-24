@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 
 from api.deps import deps
-from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, GetDiscsRequestDto
+from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, GetDiscsRequestDto, UpdateDiscRequestDto
 
 app = FastAPI()
 
@@ -42,3 +42,10 @@ async def get_discs(name_exact: str = None, name: str = None, artist_exact: str 
     params.limit = limit
 
     return await crud_svc.get_discs(params)
+
+
+@app.put("/discs/{_id}")
+async def update_disc(_id: str, data: UpdateDiscRequestDto, crud_svc: DiscCrud = Depends(deps)):
+    data.id = _id
+
+    return await crud_svc.update_disc(data)

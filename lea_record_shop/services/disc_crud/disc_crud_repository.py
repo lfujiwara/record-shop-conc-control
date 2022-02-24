@@ -18,3 +18,7 @@ class IDiscCrudRepository(ABC):
     @abstractmethod
     def get(self, params: GetDiscsRequestDto) -> Awaitable[List[Disc]]:
         pass
+
+    @abstractmethod
+    def update(self, disc: Disc) -> Awaitable[None]:
+        pass
