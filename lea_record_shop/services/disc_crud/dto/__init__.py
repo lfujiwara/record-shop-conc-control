@@ -1,0 +1,2 @@
+from lea_record_shop.services.disc_crud.dto.create_disc_request_dto import CreateDiscRequestDto
+from lea_record_shop.services.disc_crud.dto.disc_dto import DiscDto

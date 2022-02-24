@@ -1,6 +1,5 @@
-class Disc:
-    """Represents a disc in stock."""
-
+class DiscDto:
+    """Disc value object."""
     id: str
     name: str
     artist: str
