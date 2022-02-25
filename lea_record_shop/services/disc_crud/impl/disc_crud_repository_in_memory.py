@@ -11,8 +11,8 @@ class DiscCrudRepositoryInMemory(IDiscCrudRepository):
     async def save(self, disc: Disc) -> Awaitable[None]:
         self.discs[disc.id] = disc
 
-    async def get_by_id(self, id: str) -> Awaitable[Disc]:
-        return self.discs.get(id, None)
+    async def get_by_id(self, _id: str) -> Awaitable[Disc]:
+        return self.discs.get(_id, None)
 
     async def get(self, params: GetDiscsRequestDto) -> Awaitable[List[Disc]]:
         response = []

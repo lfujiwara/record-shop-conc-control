@@ -103,7 +103,7 @@ class DiscCrud():
 
     async def delete_disc(self, _id: str) -> Awaitable[None]:
         try:
-            deleted = await self.disc_crud_repository.delete_by_id(_id)
+            deleted = await self.disc_crud_repository.delete(_id)
         except Exception as e:
             raise disc_crud_exceptions.ProviderException(e)
 

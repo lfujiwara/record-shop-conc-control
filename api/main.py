@@ -7,11 +7,6 @@ from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, G
 app = FastAPI()
 
 
-@app.get("/")
-def hello():
-    return "hello"
-
-
 @app.post("/discs")
 async def create_disc(data: CreateDiscRequestDto, crud_svc: DiscCrud = Depends(deps)):
     return await crud_svc.create_disc(data)

@@ -12,7 +12,7 @@ class IDiscCrudRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Awaitable[Disc]:
+    def get_by_id(self, _id: str) -> Awaitable[Disc]:
         pass
 
     @abstractmethod
@@ -20,7 +20,7 @@ class IDiscCrudRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, disc: Disc) -> Awaitable[None]:
+    def update(self, disc: Disc) -> Awaitable[bool]:
         pass
 
     @abstractmethod
