@@ -5,6 +5,7 @@ from lea_record_shop.entities import Disc
 from lea_record_shop.services.disc_crud import GetDiscsRequestDto, GetDiscsResponseDto
 from lea_record_shop.services.disc_crud.disc_crud_repository import IDiscCrudRepository
 from lea_record_shop.services.disc_crud.dto import CreateDiscRequestDto, DiscDto
+import lea_record_shop.services.disc_crud.disc_crud_exceptions as disc_crud_exceptions
 
 QUERY_HARD_LIMIT = 100
 
@@ -36,13 +37,24 @@ class DiscCrud():
         # ...
 
         # Persist
-        await self.disc_crud_repository.save(disc)
+        # yeah, a lot of try/excepts, the reason for this
+        # is to properly report when an error happens outside
+        # the application layer (e.g. one of it's providers/deps)
+        # and type them properly, maybe there's a better way to do this (?)
+        try:
+            await self.disc_crud_repository.save(disc)
+        except Exception as e:
+            raise disc_crud_exceptions.ProviderException(e)
         # ...
 
         return _serialize_disc_to_dto(disc)
 
     async def get_disc(self, _id: str) -> DiscDto:
-        disc = await self.disc_crud_repository.get_by_id(_id)
+        try:
+            disc = await self.disc_crud_repository.get_by_id(_id)
+        except Exception as e:
+            raise disc_crud_exceptions.ProviderException(e)
+
         if disc is None:
             return None
         return _serialize_disc_to_dto(disc)
@@ -50,7 +62,10 @@ class DiscCrud():
     async def get_discs(self, params: GetDiscsRequestDto = GetDiscsRequestDto()) -> Awaitable[GetDiscsResponseDto]:
         params.limit = min(params.limit, QUERY_HARD_LIMIT)
 
-        data = await self.disc_crud_repository.get(params)
+        try:
+            data = await self.disc_crud_repository.get(params)
+        except Exception as e:
+            raise disc_crud_exceptions.ProviderException(e)
 
         response = GetDiscsResponseDto()
         response.params = params
@@ -62,9 +77,12 @@ class DiscCrud():
 
     async def update_disc(self, data: DiscDto) -> DiscDto:
         # Check if disc exists
-        disc = await self.disc_crud_repository.get_by_id(data.id)
+        try:
+            disc = await self.disc_crud_repository.get_by_id(data.id)
+        except Exception as e:
+            raise disc_crud_exceptions.ProviderException(e)
         if disc is None:
-            raise Exception("Disc not found")
+            raise disc_crud_exceptions.RequestedDiscNotFound(data.id)
 
         # Validation...
         # ...
@@ -82,3 +100,13 @@ class DiscCrud():
         # ...
 
         return _serialize_disc_to_dto(disc)
+
+    async def delete_disc(self, _id: str) -> Awaitable[None]:
+        try:
+            deleted = await self.disc_crud_repository.delete_by_id(_id)
+        except Exception as e:
+            raise disc_crud_exceptions.ProviderException(e)
+
+        if not deleted:
+            raise disc_crud_exceptions.RequestedDiscNotFound(_id)
+        return None

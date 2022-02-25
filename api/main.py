@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 
 from api.deps import deps
-from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, GetDiscsRequestDto, UpdateDiscRequestDto
+from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, GetDiscsRequestDto, UpdateDiscRequestDto, \
+    disc_crud_exceptions
 
 app = FastAPI()
 
@@ -47,5 +48,17 @@ async def get_discs(name_exact: str = None, name: str = None, artist_exact: str 
 @app.put("/discs/{_id}")
 async def update_disc(_id: str, data: UpdateDiscRequestDto, crud_svc: DiscCrud = Depends(deps)):
     data.id = _id
+    try:
+        return await crud_svc.update_disc(data)
+    except disc_crud_exceptions.RequestedDiscNotFound:
+        # Re-raising here so that the application layer doesn't need to know sh**
+        # about http status codes
+        raise HTTPException(status_code=404, detail="Disc not found")
 
-    return await crud_svc.update_disc(data)
+
+@app.delete("/discs/{_id}")
+async def delete_disc(_id: str, crud_svc: DiscCrud = Depends(deps)):
+    try:
+        return await crud_svc.delete_disc(_id)
+    except disc_crud_exceptions.RequestedDiscNotFound:
+        raise HTTPException(status_code=404, detail="Disc not found")

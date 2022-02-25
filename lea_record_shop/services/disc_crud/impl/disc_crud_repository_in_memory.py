@@ -44,7 +44,8 @@ class DiscCrudRepositoryInMemory(IDiscCrudRepository):
             raise Exception('Disc not found')
         self.discs[disc.id] = disc
 
-    async def delete(self, id: str) -> Awaitable[None]:
-        if id not in self.discs:
-            raise Exception('Disc not found')
-        del self.discs[id]
+    async def delete(self, _id: str) -> Awaitable[None]:
+        if _id not in self.discs:
+            return False
+        del self.discs[_id]
+        return True

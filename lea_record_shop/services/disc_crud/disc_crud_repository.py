@@ -22,3 +22,7 @@ class IDiscCrudRepository(ABC):
     @abstractmethod
     def update(self, disc: Disc) -> Awaitable[None]:
         pass
+
+    @abstractmethod
+    def delete(self, _id: str) -> Awaitable[bool]:
+        pass
