@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: oci/Dockerfile
+      target: development
+    container_name: api
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_SCHEMA=public
+    ports:
+      - "8100:8000"
+    volumes:
+      - ../:/app
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "8101:5432"
