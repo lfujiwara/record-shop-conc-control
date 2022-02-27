@@ -1,6 +1,3 @@
-import datetime
-
-
 class CustomerDto:
     id: str
     document: str

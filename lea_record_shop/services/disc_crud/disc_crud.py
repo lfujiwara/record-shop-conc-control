@@ -1,11 +1,11 @@
 from typing import Awaitable
 from uuid import uuid4
 
+import lea_record_shop.services.disc_crud.disc_crud_exceptions as disc_crud_exceptions
 from lea_record_shop.entities import Disc
 from lea_record_shop.services.disc_crud import GetDiscsRequestDto, GetDiscsResponseDto
 from lea_record_shop.services.disc_crud.disc_crud_repository import IDiscCrudRepository
 from lea_record_shop.services.disc_crud.dto import CreateDiscRequestDto, DiscDto
-import lea_record_shop.services.disc_crud.disc_crud_exceptions as disc_crud_exceptions
 
 QUERY_HARD_LIMIT = 100
 

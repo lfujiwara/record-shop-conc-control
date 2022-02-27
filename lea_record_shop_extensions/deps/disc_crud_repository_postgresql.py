@@ -1,9 +1,10 @@
 from typing import Awaitable, List
 
+from aiopg import connection as pg_connection
+
 from lea_record_shop.entities import Disc
 from lea_record_shop.services.disc_crud import GetDiscsRequestDto
 from lea_record_shop.services.disc_crud.disc_crud_repository import IDiscCrudRepository
-from aiopg import connection as pg_connection
 
 
 class DiscCrudRepositoryPostgresql(IDiscCrudRepository):

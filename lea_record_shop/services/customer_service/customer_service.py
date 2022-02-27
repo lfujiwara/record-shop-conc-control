@@ -1,11 +1,11 @@
 import datetime
 from uuid import uuid4
 
+import lea_record_shop.services.customer_service.customer_service_exceptions as customer_service_exceptions
 from lea_record_shop.entities import Customer
 from lea_record_shop.services.customer_service.customer_service_repository import ICustomerServiceRepository
 from lea_record_shop.services.customer_service.dto import SignUpCustomerRequestDto, UpdateCustomerRequestDto, \
     CustomerDto
-import lea_record_shop.services.customer_service.customer_service_exceptions as customer_service_exceptions
 
 
 class CustomerService:

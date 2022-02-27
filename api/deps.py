@@ -30,7 +30,6 @@ _get_pool = _pool_gen()
 
 
 async def inject_disc_crud() -> DiscCrud:
-    print('injecting disc crud')
     # any alternatives to this? (anext)
     pool = await _get_pool.__anext__()
     conn = await pool.acquire()
@@ -38,7 +37,6 @@ async def inject_disc_crud() -> DiscCrud:
 
 
 async def inject_customer_service() -> CustomerService:
-    print('injecting customer service')
     pool = await _get_pool.__anext__()
     conn = await pool.acquire()
     return CustomerService(CustomerServiceRepositoryPostgresql(conn))
