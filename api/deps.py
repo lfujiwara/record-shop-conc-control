@@ -1,7 +1,10 @@
-from lea_record_shop.services.disc_crud import DiscCrud
-import aiopg
 from os import environ
 
+import aiopg
+
+from lea_record_shop.services.customer_service import CustomerService
+from lea_record_shop.services.disc_crud import DiscCrud
+from lea_record_shop_extensions.deps.customer_service_repository_postgresql import CustomerServiceRepositoryPostgresql
 from lea_record_shop_extensions.deps.disc_crud_repository_postgresql import DiscCrudRepositoryPostgresql
 
 DB_CONFIG = {'host': environ.get('POSTGRES_HOST', 'localhost'), 'port': int(environ.get('POSTGRES_PORT', 5432)),
@@ -26,8 +29,16 @@ async def _pool_gen():
 _get_pool = _pool_gen()
 
 
-async def deps() -> DiscCrud:
+async def inject_disc_crud() -> DiscCrud:
+    print('injecting disc crud')
     # any alternatives to this? (anext)
     pool = await _get_pool.__anext__()
     conn = await pool.acquire()
     return DiscCrud(DiscCrudRepositoryPostgresql(conn))
+
+
+async def inject_customer_service() -> CustomerService:
+    print('injecting customer service')
+    pool = await _get_pool.__anext__()
+    conn = await pool.acquire()
+    return CustomerService(CustomerServiceRepositoryPostgresql(conn))
