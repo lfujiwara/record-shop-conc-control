@@ -58,3 +58,6 @@ class CustomerServiceRepositoryPostgresql(ICustomerServiceRepository):
             row_count = _cursor.rowcount
 
         return row_count > 0
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._connection.close()

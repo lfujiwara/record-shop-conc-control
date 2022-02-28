@@ -19,3 +19,8 @@ class Customer:
         self.email = email
         self.phone = phone
         self.is_active = is_active
+
+    def to_json(self):
+        return {'id': str(self.id), 'document': self.document, 'name': self.name,
+                'birth_date': self.birth_date.isoformat(), 'email': self.email, 'phone': self.phone,
+                'is_active': self.is_active}

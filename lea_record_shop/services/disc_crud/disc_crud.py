@@ -32,7 +32,7 @@ class DiscCrud():
         # ...
 
         # Instantiate
-        disc = Disc(id=str(uuid4()), name=data.name, artist=data.artist, year_of_release=data.year_of_release,
+        disc = Disc(_id=str(uuid4()), name=data.name, artist=data.artist, year_of_release=data.year_of_release,
                     genre=data.genre, quantity=data.quantity)
         # ...
 

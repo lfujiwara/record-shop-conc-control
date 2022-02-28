@@ -29,7 +29,7 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
 
         if not data:
             return None
-        return Disc(id=data[0], name=data[1], artist=data[2], year_of_release=data[3], genre=data[4], quantity=data[5])
+        return Disc(_id=data[0], name=data[1], artist=data[2], year_of_release=data[3], genre=data[4], quantity=data[5])
 
     async def get(self, params: GetDiscsRequestDto) -> Awaitable[List[Disc]]:
 
@@ -73,7 +73,7 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
 
             results = await _cursor.fetchall()
 
-        return [Disc(id=result[0], name=result[1], artist=result[2], year_of_release=result[3], genre=result[4],
+        return [Disc(_id=result[0], name=result[1], artist=result[2], year_of_release=result[3], genre=result[4],
                      quantity=result[5]) for result in results]
 
     async def update(self, disc: Disc) -> Awaitable[bool]:
@@ -96,3 +96,6 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
             row_count = _cursor.rowcount
 
         return row_count > 0
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._connection.close()
