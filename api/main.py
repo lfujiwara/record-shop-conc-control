@@ -5,7 +5,7 @@ from lea_record_shop.services.customer_service import SignUpCustomerRequestDto, 
     UpdateCustomerRequestDto, customer_service_exceptions
 from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, GetDiscsRequestDto, UpdateDiscRequestDto, \
     disc_crud_exceptions
-from lea_record_shop.services.purchase_order_service import PurchaseOrderService
+from lea_record_shop.services.purchase_order_service import PurchaseOrderService, purchase_order_service_exceptions
 from lea_record_shop.services.purchase_order_service.dto import PlacePurchaseOrderRequestDto
 
 app = FastAPI()
@@ -81,4 +81,7 @@ async def update_customer(_id: str, data: UpdateCustomerRequestDto,
 @app.post("/purchase-orders")
 async def purchase_order(data: PlacePurchaseOrderRequestDto,
                          svc: PurchaseOrderService = Depends(inject_purchase_order_service)):
-    return await svc.place_purchase_order(data)
+    try:
+        return await svc.place_purchase_order(data)
+    except purchase_order_service_exceptions.RequestedDiscWithoutEnoughStock:
+        raise HTTPException(status_code=409, detail="Disc is out of stock")

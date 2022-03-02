@@ -1,5 +1,7 @@
 FROM python:3.10-alpine as base
 
+RUN apk add --no-cache build-base
+
 WORKDIR /app
 COPY .. .
 RUN pip install -r requirements.txt

@@ -17,7 +17,6 @@ class DiscCrudRepositoryInMemory(IDiscCrudRepository):
     async def get(self, params: GetDiscsRequestDto) -> Awaitable[List[Disc]]:
         response = []
 
-        print(params.offset, params.limit)
         for disc in list(self.discs.values())[params.offset:(params.offset + params.limit)]:
             if params.name_exact and disc.name != params.name_exact:
                 continue

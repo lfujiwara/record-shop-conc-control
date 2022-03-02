@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+import \
+    lea_record_shop.services.purchase_order_service.purchase_order_service_exceptions as purchase_order_service_exceptions
 from lea_record_shop.entities import PurchaseOrder
 from lea_record_shop.services.customer_service.customer_service_repository import ICustomerServiceRepository
 from lea_record_shop.services.disc_crud.disc_crud_repository import IDiscCrudRepository
@@ -36,7 +38,9 @@ class PurchaseOrderService:
         if data.quantity <= 0:
             raise ValueError("Quantity must be greater than 0.")
         if disc.quantity < data.quantity:
-            raise ValueError("Not enough discs in stock.")
+            raise purchase_order_service_exceptions.RequestedDiscWithoutEnoughStock(
+                requested_disc_id=data.disc_id,
+            )
         disc.quantity -= data.quantity
         purchase_order = PurchaseOrder(uuid4(), customer, disc, data.quantity)
 
