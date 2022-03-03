@@ -1,5 +1,5 @@
 from os import environ
-from typing import Awaitable, AsyncGenerator
+from typing import AsyncGenerator, AsyncIterator
 
 import asyncpg
 from asyncpg import Pool
@@ -25,30 +25,30 @@ async def get_pool() -> AsyncGenerator:
     async with asyncpg.create_pool(host=DB_CONFIG['host'], port=DB_CONFIG['port'], user=DB_CONFIG['user'],
                                    password=DB_CONFIG['password'], database=DB_CONFIG['database'],
                                    server_settings={'search_path': DB_CONFIG['schema']}, min_size=1,
-                                   max_size=5) as pool:
+                                   max_size=2) as pool:
         try:
             yield pool
         finally:
             await pool.close()
 
 
-async def inject_disc_crud(pool: Pool = Depends(get_pool)) -> Awaitable[DiscCrud]:
+async def inject_disc_crud(pool: Pool = Depends(get_pool)) -> DiscCrud:
+    conn = await pool.acquire(timeout=30)
     try:
-        conn = await pool.acquire(timeout=30)
         return DiscCrud(DiscCrudRepositoryPostgresql(conn))
     finally:
         await pool.release(conn)
 
 
-async def inject_customer_service(pool: Pool = Depends(get_pool)) -> Awaitable[CustomerService]:
+async def inject_customer_service(pool: Pool = Depends(get_pool)) -> CustomerService:
+    conn = await pool.acquire(timeout=30)
     try:
-        conn = await pool.acquire(timeout=30)
         return CustomerService(CustomerServiceRepositoryPostgresql(conn))
     finally:
         await pool.release(conn)
 
 
-async def inject_purchase_order_service(pool: Pool = Depends(get_pool)) -> Awaitable[PurchaseOrderService]:
+async def inject_purchase_order_service(pool: Pool = Depends(get_pool)) -> AsyncIterator[PurchaseOrderService]:
     conn = await pool.acquire(timeout=30)
 
     try:
@@ -57,8 +57,6 @@ async def inject_purchase_order_service(pool: Pool = Depends(get_pool)) -> Await
         disc_repository = DiscCrudRepositoryPostgresql(conn, not USE_OPTIMISTIC_CC)
         uow = UnitOfWorkPessimisticPostgresql(conn) if not USE_OPTIMISTIC_CC else UnitOfWorkOptimisticPostgresql(conn)
 
-        yield PurchaseOrderService(
-            uow, purchase_order_repository, customer_repository, disc_repository
-        )
+        yield PurchaseOrderService(uow, purchase_order_repository, customer_repository, disc_repository)
     finally:
         await pool.release(conn)

@@ -1,13 +1,14 @@
 import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
 
 class UpdateCustomerRequestDto(BaseModel):
-    id: str = None
-    document: str
-    name: str
-    birth_date: datetime.date
-    email: str
-    phone: str
-    is_active: bool
+    id: Optional[str] = None
+    document: Optional[str]
+    name: Optional[str]
+    birth_date: Optional[datetime.date]
+    email: Optional[str]
+    phone: Optional[str]
+    is_active: Optional[bool]

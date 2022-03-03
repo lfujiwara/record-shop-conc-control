@@ -1,6 +1,5 @@
-import \
-    lea_record_shop.services.purchase_order_service.purchase_order_service_exceptions as purchase_order_service_exceptions
+import lea_record_shop.services.purchase_order_service.purchase_order_service_exceptions \
+    as purchase_order_service_exceptions
 from lea_record_shop.services.purchase_order_service.purchase_order_repository import IPurchaseOrderRepository
 from lea_record_shop.services.purchase_order_service.purchase_order_service import PurchaseOrderService
-from lea_record_shop.services.purchase_order_service.unit_of_work import \
-    IUnitOfWork
+from lea_record_shop.services.purchase_order_service.unit_of_work import IUnitOfWork

@@ -3,12 +3,14 @@ from fastapi import FastAPI, Depends, HTTPException
 from api.deps import inject_disc_crud, inject_customer_service, inject_purchase_order_service
 from lea_record_shop.services.customer_service import SignUpCustomerRequestDto, CustomerService, \
     UpdateCustomerRequestDto, customer_service_exceptions
-from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, GetDiscsRequestDto, UpdateDiscRequestDto, \
-    disc_crud_exceptions
+from lea_record_shop.services.disc_crud import CreateDiscRequestDto, DiscCrud, GetDiscsRequestDto, \
+    UpdateDiscRequestDto, disc_crud_exceptions
 from lea_record_shop.services.purchase_order_service import PurchaseOrderService, purchase_order_service_exceptions
 from lea_record_shop.services.purchase_order_service.dto import PlacePurchaseOrderRequestDto
 
 app = FastAPI()
+
+DISC_NOT_FOUND_MSG = "Disc not found"
 
 
 @app.post("/discs", status_code=201)
@@ -20,7 +22,7 @@ async def create_disc(data: CreateDiscRequestDto, crud_svc: DiscCrud = Depends(i
 async def get_disc(_id: str, crud_svc: DiscCrud = Depends(inject_disc_crud)):
     result = await crud_svc.get_disc(_id)
     if result is None:
-        raise HTTPException(status_code=404, detail="Disc not found")
+        raise HTTPException(status_code=404, detail=DISC_NOT_FOUND_MSG)
     return result
 
 
@@ -52,7 +54,7 @@ async def update_disc(_id: str, data: UpdateDiscRequestDto, crud_svc: DiscCrud =
     except disc_crud_exceptions.RequestedDiscNotFound:
         # Re-raising here so that the application layer doesn't need to know sh**
         # about http status codes
-        raise HTTPException(status_code=404, detail="Disc not found")
+        raise HTTPException(status_code=404, detail=DISC_NOT_FOUND_MSG)
 
 
 @app.delete("/discs/{_id}")
@@ -60,7 +62,7 @@ async def delete_disc(_id: str, crud_svc: DiscCrud = Depends(inject_disc_crud)):
     try:
         return await crud_svc.delete_disc(_id)
     except disc_crud_exceptions.RequestedDiscNotFound:
-        raise HTTPException(status_code=404, detail="Disc not found")
+        raise HTTPException(status_code=404, detail=DISC_NOT_FOUND_MSG)
 
 
 @app.post("/customers", status_code=201)

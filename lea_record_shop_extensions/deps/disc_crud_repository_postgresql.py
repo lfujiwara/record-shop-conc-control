@@ -1,4 +1,4 @@
-from typing import Awaitable, List
+from typing import List, Optional
 
 from asyncpg import Connection
 
@@ -15,7 +15,7 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
         self._connection = _connection
         self._lock_on_get = lock_on_get
 
-    async def save(self, disc: Disc) -> Awaitable[None]:
+    async def save(self, disc: Disc) -> None:
         query = """
             INSERT INTO discs (id, name, artist, year_of_release, genre, quantity)
             VALUES ($1, $2, $3, $4, $5, $q6)
@@ -23,7 +23,7 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
         await self._connection.execute(query, (
             disc.id, disc.name, disc.artist, disc.year_of_release, disc.genre, disc.quantity))
 
-    async def get_by_id(self, _id: str) -> Awaitable[Disc]:
+    async def get_by_id(self, _id: str) -> Optional[Disc]:
         query = f"""
             SELECT id, name, artist, year_of_release, genre, quantity FROM discs WHERE id = $1
             {'FOR UPDATE' if self._lock_on_get else ''};
@@ -33,12 +33,10 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
         data = await self._connection.fetchrow(query, *args)
         if not data:
             return None
-        return Disc(
-            _id=data['id'], name=data['name'], artist=data['artist'], year_of_release=data['year_of_release'],
-            genre=data['genre'], quantity=data['quantity']
-        )
+        return Disc(_id=data['id'], name=data['name'], artist=data['artist'], year_of_release=data['year_of_release'],
+                    genre=data['genre'], quantity=data['quantity'])
 
-    async def get(self, params: GetDiscsRequestDto) -> Awaitable[List[Disc]]:
+    async def get(self, params: GetDiscsRequestDto) -> List[Disc]:
 
         _where_args = []
         _where_clauses = []
@@ -80,14 +78,11 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
         args = (*_where_args, params.limit, params.offset)
         results = await self._connection.fetch(query, *args)
 
-        return [
-            Disc(
-                _id=result['id'], name=result['name'], artist=result['artist'],
-                year_of_release=result['year_of_release'], genre=result['genre'], quantity=result['quantity']
-            )
-            for result in results]
+        return [Disc(_id=result['id'], name=result['name'], artist=result['artist'],
+                     year_of_release=result['year_of_release'], genre=result['genre'], quantity=result['quantity']) for
+                result in results]
 
-    async def update(self, disc: Disc) -> Awaitable[bool]:
+    async def update(self, disc: Disc) -> bool:
         query = """
             UPDATE discs 
                 SET name = $1, artist = $2, year_of_release = $3::int, genre = $4, quantity = $5::int
@@ -100,7 +95,7 @@ class DiscCrudRepositoryPostgresql(IDiscCrudRepository):
 
         return len(result) > 0
 
-    async def delete(self, _id: str) -> Awaitable[bool]:
+    async def delete(self, _id: str) -> bool:
         query = """
             DELETE FROM discs WHERE id = $1
             RETURNING id;
